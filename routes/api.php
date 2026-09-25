@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
@@ -10,6 +11,36 @@ Route::get('/user', function (Request $request) {
 
 
 Route::prefix('v1')->group(function () {
+
+    Route::get('/security/device-info', function (Request $request) {
+        $agent = $request->agent();
+        $user = Auth::user();
+        return response()->json([
+            'success' => true,
+            "device" => [
+                'user_agent' => $agent->userAgent(),
+                'hash' => $agent->hash(),
+                'is_bot' => $agent->isBot(),
+            ],
+            "browser" => [
+                'name' => $agent->browser()?->name(),
+                'version' => $agent->browser()?->version(),
+
+            ],
+            'os' => [
+                'name' => $agent->os()?->name(),
+                'version' => $agent->os()?->version(),
+            ],
+            'request' => [
+                'ip' => $request->ip(),
+                'user_id' => $user->id,
+                'username' => $user->name,
+                'email' => $user->email,
+
+
+            ]
+        ]);
+    })->middleware('auth:sanctum');
     Route::get('test', [AuthController::class, 'test']);
     Route::post('register', [AuthController::class, 'register']);
     Route::post('resend-otp', [AuthController::class, 'resendOtp']);

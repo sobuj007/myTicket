@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Middleware\DeviceSecurityMiddleware;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Spatie\Permission\Middleware\PermissionMiddleware;
+use Spatie\Permission\Middleware\RoleMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,8 +20,15 @@ return Application::configure(basePath: dirname(__DIR__))
         //
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'device.security' => \App\Http\Middleware\DeviceSecurityMiddleware::class
         ]);
+        // $middleware->priority([
+        //     Authenticate::class,            // 1st: Authenticates token via Sanctum/Auth
+        //     DeviceSecurityMiddleware::class, // 2nd: Verifies X-Device-ID & registered device
+        //     RoleMiddleware::class,           // 3rd: Verifies Spatie role
+        //     PermissionMiddleware::class,     // 4th: Verifies Spatie permission
+        // ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

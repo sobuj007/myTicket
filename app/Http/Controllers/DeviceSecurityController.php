@@ -56,7 +56,7 @@ class DeviceSecurityController extends Controller
         $securityFingerprint = hash(
             'sha256',
             implode('|', [
-                $user->id,
+                $request->email,
                 $request->ip(),
                 $agent->userAgent(),
             ])
@@ -259,6 +259,7 @@ class DeviceSecurityController extends Controller
             return response()->json(new ErrorResource($th));
         }
     }
+
     public function getTrustedDevice(Request $request, int $id)
     {
         $user = $request->user();

@@ -20,7 +20,7 @@ Route::prefix('v1')->group(function () {
     Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
     Route::post('verify-forget-otp', [AuthController::class, 'verifyForgetOtp']);
     Route::post('login', [AuthController::class, 'login']);
-    Route::post('/security/device-info', [DeviceSecurityController::class, 'registerDevices']);
+    Route::post('/security/device-register', [DeviceSecurityController::class, 'registerDevices']);
 
 
     Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
@@ -39,11 +39,11 @@ Route::prefix('v1')->group(function () {
 
             Route::post('/security/my-device', function (Request $request) {
 
-                // $device = $request->attributes->get('user_device');
+                $device = $request->attributes->get('user_device');
 
                 return response()->json([
                     'success' => true,
-                    'device' => "device",
+                    'device' => $device,
                 ]);
             });
         });

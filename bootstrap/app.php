@@ -23,12 +23,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'device.security' => \App\Http\Middleware\DeviceSecurityMiddleware::class
         ]);
-        // $middleware->priority([
-        //     Authenticate::class,            // 1st: Authenticates token via Sanctum/Auth
-        //     DeviceSecurityMiddleware::class, // 2nd: Verifies X-Device-ID & registered device
-        //     RoleMiddleware::class,           // 3rd: Verifies Spatie role
-        //     PermissionMiddleware::class,     // 4th: Verifies Spatie permission
-        // ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

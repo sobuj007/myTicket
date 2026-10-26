@@ -24,6 +24,9 @@ class DeviceSecurityMiddleware
         $auth = Auth::user();
 
         $user = User::where('email', $auth->email)->first();
+
+        // check  device limit for user
+        $deviceLimit = UserDevice::where('user_id', $user->id)->where('is_blocked', false)->Orwhere('is_active', true)->count();
         if (!$user) {
             return response()->json([
                 'success' => false,
@@ -34,15 +37,15 @@ class DeviceSecurityMiddleware
                 'ip' => $request->ip()
             ], 401);
         }
-        $securityFingerprint = hash(
-            'sha256',
-            implode('|', [
-                $user->email,
-                $request->ip(),
-                $agent->userAgent(),
-            ])
-        );
-        return response()->json($securityFingerprint);
+        if ($deviceLimit > 3) {
+            return response()->json([
+                'success' => false,
+                'message' => "Device Limit exists",
+                'devicelimit' => $deviceLimit,
+            ]);
+        }
+
+
         $deviceId =
             $request->header('X-Device-ID')
             ?? $request->input('device_id')

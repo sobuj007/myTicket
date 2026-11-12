@@ -21,16 +21,16 @@ class DeviceSecurityController extends Controller
         try {
 
             $user = User::where('email', $request->email)->first();
-            $checkDeviceLimit = UserDevice::where('user_id', $user->id)->where('is_active', true)->count();
-            if ($checkDeviceLimit > 3) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Maximum 3 active devices are allowed.',
-                    'code' => 'MAX_DEVICE_LIMIT',
-                    'active_devices' => $checkDeviceLimit,
-                    'maximum_devices' => 3,
-                ], 422);
-            }
+            // $checkDeviceLimit = UserDevice::where('user_id', $user->id)->where('is_active', true)->where('is_blocked', false)->count();
+            // if ($checkDeviceLimit > 3) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Maximum 3 active devices are allowed.',
+            //         'code' => 'MAX_DEVICE_LIMIT from Register',
+            //         'active_devices' => $checkDeviceLimit,
+            //         'maximum_devices' => 3,
+            //     ], 422);
+            // }
 
             $device = $this->myfunc($request, $user);
 
@@ -75,9 +75,10 @@ class DeviceSecurityController extends Controller
         //  get exesting devices of user
 
         $existingDevice = UserDevice::where('user_id', $user->id)->where('device_id', $deviceId)->where('ownhash', $ownhash)->first();
+
         //  checking devices max 3 ..............
-        $activeDevicesCount = UserDevice::where('user_id', $user->id)->where('is_active', true)->count();
-        if ($existingDevice && $activeDevicesCount > 3) {
+        $activeDevicesCount = UserDevice::where('user_id', $user->id)->where('is_active', true)->where('is_blocked', false)->count();
+        if ($activeDevicesCount > 3) {
 
             return response()->json([
                 'success' => false,
@@ -104,18 +105,7 @@ class DeviceSecurityController extends Controller
                 'payload' => $existingDevice->fresh(),
             ]);
         }
-        //  checking devices max 3 ..............
-        $activeDevicesCount = UserDevice::where('user_id', $user->id)->where('is_active', true)->count();
-        if ($existingDevice && $activeDevicesCount > 3) {
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Maximum 3 active devices are allowed.',
-                'code' => 'MAX_DEVICE_LIMIT',
-                'active_devices' => $activeDevicesCount,
-                'maximum_devices' => 3,
-            ], 422);
-        }
 
 
 
@@ -248,6 +238,8 @@ class DeviceSecurityController extends Controller
             if ($devices) {
                 return response()->json([
                     'success' => true,
+                    'message' => "User Devices",
+                    'total devices' => $devices->count(),
                     'payload' => $devices
                 ]);
             }

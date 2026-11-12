@@ -30,20 +30,20 @@ Route::prefix('v1')->group(function () {
 
     Route::prefix('device')->group(function () {
         Route::post('/devices/', [DeviceSecurityController::class, 'getDevices']);
-        // Route::middleware('device.security')->group(function () {
-        //     Route::post('devices/{id}/trust', [DeviceSecurityController::class, 'getTrustedDevice']);
-        //     Route::post('devices/{id}/block', [DeviceSecurityController::class, 'blockedDevice']);
-        //     Route::delete('devices/{id}', [DeviceSecurityController::class, 'removeDevice']);
-        // });
+        Route::middleware('device.security')->group(function () {
+            Route::post('devices/{id}/trust', [DeviceSecurityController::class, 'getTrustedDevice']);
+            Route::post('devices/{id}/block', [DeviceSecurityController::class, 'blockedDevice']);
+            Route::delete('devices/{id}', [DeviceSecurityController::class, 'removeDevice']);
+        });
         Route::middleware(['auth:sanctum', 'device.security'])->group(function () {
 
             Route::post('/security/my-device', function (Request $request) {
 
-                $device = $request->attributes->get('user_device');
+                // $device = $request->attributes->get('user_device');
 
                 return response()->json([
                     'success' => true,
-                    'device' => $device,
+                    'device' => "this is my device",
                 ]);
             });
         });

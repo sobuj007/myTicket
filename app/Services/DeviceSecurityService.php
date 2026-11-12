@@ -104,6 +104,7 @@ class DeviceSecurityService
         $agent = $request->agent();
         $getOwnhash = hash('sha256', implode('|', [$request->email, $request->ip, $agent->userAgent(),]));
 
+
         $yesTrustedDevice = UserDevice::where('user_id', $user->id)
             ->where('ownhash', $getOwnhash)
             ->where('is_active', true)
